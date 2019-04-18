@@ -22,7 +22,7 @@ class GameViewModel : ViewModel() {
     // The current _score
     private val _score = MutableLiveData<Int>()
 
-    private val _time = MutableLiveData<String>()
+    private val _currentTime = MutableLiveData<Long>()
 
     private val _eventGameFinish = MutableLiveData<Boolean>()
 
@@ -32,7 +32,7 @@ class GameViewModel : ViewModel() {
         }
 
         override fun onTick(p0: Long) {
-            DateUtils.formatElapsedTime(p0)
+            _currentTime.value = p0
         }
     }
 
@@ -43,7 +43,7 @@ class GameViewModel : ViewModel() {
         resetList()
         nextWord()
         Timber.i("GameViewModel created")
-        _time.value = "01:00"
+        timer.start()
     }
     val eventGameFinish: LiveData<Boolean>
         get() = _eventGameFinish
@@ -51,6 +51,8 @@ class GameViewModel : ViewModel() {
         get() = _score
     val word: LiveData<String>
         get() = _word
+    val currentTime: LiveData<Long>
+        get() = _currentTime
     // The list of words - the front of the list is the next _word to guess
     private lateinit var wordList: MutableList<String>
 
@@ -118,5 +120,6 @@ class GameViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         Timber.i("GameViewModel cleared")
+        timer.cancel()
     }
 }
