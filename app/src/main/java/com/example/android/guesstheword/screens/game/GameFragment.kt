@@ -52,6 +52,7 @@ class GameFragment : Fragment() {
                 container,
                 false
         )
+        binding.gameViewmodel = gameViewModel
 
         gameViewModel.score.observe(this,  Observer{newScore -> binding.scoreText.text = newScore.toString()})
         gameViewModel.word.observe(this,  Observer{newWord -> binding.wordText.text = newWord})
@@ -64,13 +65,6 @@ class GameFragment : Fragment() {
         gameViewModel.currentTime.observe(this, Observer { currentTime ->
             binding.timerText.text = DateUtils.formatElapsedTime(currentTime/1000)
         })
-        binding.correctButton.setOnClickListener {
-            gameViewModel.onCorrect()
-        }
-
-        binding.skipButton.setOnClickListener {
-            gameViewModel.onSkip()
-        }
 
         return binding.root
     }
