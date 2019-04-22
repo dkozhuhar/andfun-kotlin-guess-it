@@ -15,6 +15,8 @@ val DONE = 0L
 val ONE_SECOND = 1000L
 // This is the total time of the game
 val COUNTDOWN_TIME = 6000L
+
+val PANIC_TIME = 3000L
 //Buzzer patterns
 private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
 private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
@@ -39,6 +41,8 @@ class GameViewModel : ViewModel() {
 
     private val _eventGameFinish = MutableLiveData<Boolean>()
 
+    private val _buzzing = MutableLiveData<BuzzType>()
+
     private val timer = object: CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
         override fun onFinish() {
             _eventGameFinish.value = true
@@ -46,6 +50,9 @@ class GameViewModel : ViewModel() {
 
         override fun onTick(p0: Long) {
             _currentTime.value = p0
+            if (p0 == PANIC_TIME) {
+                _buzzing.value = BuzzType.COUNTDOWN_PANIC
+            }
         }
     }
 
@@ -53,6 +60,7 @@ class GameViewModel : ViewModel() {
         _eventGameFinish.value = false
         _score.value = 0
         _word.value = ""
+        _buzzing.value = BuzzType.NO_BUZZ
         resetList()
         nextWord()
         Timber.i("GameViewModel created")
@@ -66,6 +74,8 @@ class GameViewModel : ViewModel() {
         get() = _word
     val currentTime: LiveData<Long>
         get() = _currentTime
+    val buzzing: LiveData<BuzzType>
+        get() = _buzzing
     val currentTimeString = Transformations.map(currentTime) {time ->
         DateUtils.formatElapsedTime(time/1000)
     }
@@ -131,7 +141,10 @@ class GameViewModel : ViewModel() {
     fun onGameFinishedComplete (){
         _eventGameFinish.value = false
     }
-
+    fun buzzFinished () {
+        _buzzing.value = BuzzType.NO_BUZZ
+        Timber.i("Buzzing finished")
+    }
 
     override fun onCleared() {
         super.onCleared()

@@ -66,6 +66,14 @@ class GameFragment : Fragment() {
             }
         })
 
+        gameViewModel.buzzing.observe(this, Observer { buzzType ->
+            if (buzzType != BuzzType.NO_BUZZ) {
+                buzz(buzzType.pattern)
+                Timber.i("Buzzing began")
+                gameViewModel.buzzFinished()
+            }
+        })
+
         return binding.root
     }
 
